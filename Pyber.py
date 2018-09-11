@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[127]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -25,7 +25,7 @@ city_and_ride_df = pd.merge(city_df, ride_df, on="city", how="left")
 city_and_ride_df.head(10)
 
 
-# In[2]:
+# In[128]:
 
 
 #-----------------------  Bubble Plot of Ride Sharing Data  ---------------------------------
@@ -36,7 +36,7 @@ city_and_ride_df.head(10)
 # 3. buble size = drivers for each city type
 
 
-# In[3]:
+# In[129]:
 
 
 # build the dataframe of each city type
@@ -60,7 +60,7 @@ subarban_driver_count = subarban_cities_df.groupby(["city"]).mean()["driver_coun
 rural_driver_count    = rural_cities_df.groupby(["city"]).mean()["driver_count"]
 
 
-# In[9]:
+# In[137]:
 
 
 # scatter plot for each city type
@@ -77,52 +77,91 @@ plt.scatter(rural_count, rural_avg_fare, s=9*rural_driver_count, edgecolors="bla
 plt.title("Pyber Ride Sharing Data (2016)")
 plt.xlabel("Total Number of Rides (Per City)")
 plt.ylabel("Average Fare ($)")
-plt.xlim((0,41))
-plt.ylim((18,45))
 plt.grid(True)
 
-lgnd = plt.legend( scatterpoints=1, loc="best", title="City Types")
-lgnd.legendHandles[0]._sizes = [50]
-lgnd.legendHandles[1]._sizes = [50]
-lgnd.legendHandles[2]._sizes = [50]
+legend = plt.legend( scatterpoints=1, loc="best", title="City Types")
+legend.legendHandles[0]._sizes = [40]
+legend.legendHandles[1]._sizes = [40]
+legend.legendHandles[2]._sizes = [40]
 
 plt.text(43, 30, 'Note:\nCircle size correlates with driver count per city.')
-
-plt.show()
 
 # Save Figure
 plt.savefig("total_number_of_rides_for_city_type_scatter.png")
 plt.show()
 
 
-# In[7]:
+# In[131]:
 
 
 #------------------- Total Fares by City Type ------------------------------------------
 
 # calculate total fares for each city type
-fares_for_city_type_df = city_and_ride_df.groupby('type')["fare"].sum().reset_index()
+fares_for_city_type_df = city_and_ride_df.groupby("type")["fare"].sum().reset_index()
 
 # Build Pie Chart
 colors=("orange","skyblue","lightcoral")
 plt.pie(fares_for_city_type_df["fare"], labels = fares_for_city_type_df["type"], shadow = True, 
                     explode = (0,0,0.1), colors=colors,startangle=150, autopct = "%1.1f%%")
 
-plt.title('% of Total Fares by City Type')
+plt.title("% of Total Fares by City Type")
+
+# Save Figure
+plt.savefig("fare_percentage_by_city_type_piechart.png")
 plt.show()
 
+
+# In[132]:
+
+
+#-------------------------  Total Rides by City Type -------------------------
+
+# Calculate total number of rides for each city type
+
+rides_by_city_type_df = city_and_ride_df.groupby("type")["ride_id"].count().reset_index()
+
+# Build Pie Chart
+colors=("orange","skyblue","lightcoral")
+plt.pie(rides_by_city_type_df["ride_id"], labels = rides_by_city_type_df["type"], shadow = True, 
+                    explode = (0,0,0.1), colors=colors, startangle=150, autopct = "%1.1f%%")
+
+plt.title("% Total Rides by City Type")
+
 # Save Figure
-plt.savefig("fare_percentage_by_city_type_piechart.png")
+plt.savefig("total_rides_by_city_type_piechart.png")
+plt.show()
 
 
-# In[8]:
+# In[133]:
 
 
-# Save Figure
-plt.savefig("fare_percentage_by_city_type_piechart.png")
+#---------------------- Total Drivers by City Type ----------------------------------
+
+# get the driver count by city type
+urban_drivers_df    = city_df[city_df["type"] == "Urban"]
+subarban_drivers_df = city_df[city_df["type"] == "Suburban"]
+rural_drivers_df    = city_df[city_df["type"] == "Rural"]
+
+urban_drivers_count    = urban_drivers_df['driver_count'].sum()
+subarban_drivers_count = subarban_drivers_df['driver_count'].sum()
+rural_drivers_count    = rural_drivers_df['driver_count'].sum()
+
+# build the list of driver totals for pie plot
+drivers_count_list = [rural_drivers_count, subarban_drivers_count, urban_drivers_count]
+
+# Build Pie Chart
+colors=("orange","skyblue","lightcoral")
+plt.pie(drivers_count_list, labels = drivers_by_city_type_df["type"], 
+        shadow = True, explode = (0,0,0.1), colors=colors, startangle=150, autopct = "%1.1f%%")
+
+plt.title("% Total Drivers by City Type")
+
+#Save Figure
+plt.savefig("total_drivers_by_city_type_piechart.png")
+plt.show()
 
 
-# In[6]:
+# In[134]:
 
 
 get_ipython().system('jupyter nbconvert --to script Pyber.ipynb')
